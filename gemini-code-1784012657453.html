@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bozorcha — Sotuvchi paneli</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+:root{
+  --red:#C1361F;--red-dk:#8F2814;--red-lt:#FBEBE6;--gold:#C89B3C;--gold-dk:#9C7526;--gold-lt:#FBF3E1;
+  --ink:#221D16;--ink2:#5B5346;--ink3:#9C9384;--line:#E7E0D0;--bg:#F7F2E7;--white:#fff;
+  --green:#1A7A4A;--green-lt:#E8F5EE;
+  --brand-green:#1D3B30;--brand-green-dk:#12241D;
+  --f-display:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none}
+input,textarea,select{font-family:'Inter',sans-serif}
+
+/* ===== YANGI LOGIN & REGISTER ANIMATSIYALI EKRAN ===== */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg,#0D1F18 0%,var(--brand-green-dk) 50%,var(--brand-green) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.login-container {
+  background-color: var(--white);
+  border-radius: 30px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+  width: 768px;
+  max-width: 100%;
+  min-height: 480px;
+}
+.login-container p {
+  font-size: 13.5px;
+  line-height: 20px;
+  letter-spacing: 0.3px;
+  margin: 15px 0;
+  color: var(--ink2);
+}
+.login-container span {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.login-container button.btn-form {
+  background-color: var(--red);
+  color: #fff;
+  font-size: 12px;
+  padding: 12px 35px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(193,54,31,.25);
+}
+.login-container button.btn-form:hover {
+  background-color: var(--red-dk);
+}
+.login-container button.hidden {
+  background-color: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 35px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.login-container form {
+  background-color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  height: 100%;
+  text-align: center;
+}
+.login-container input {
+  background-color: var(--bg);
+  border: 2px solid var(--line);
+  margin: 8px 0;
+  padding: 11px 15px;
+  font-size: 13.5px;
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+  color: var(--ink);
+  transition: border-color 0.15s;
+}
+.login-container input:focus {
+  border-color: var(--red);
+}
+
+.otp-digits {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+.otp-digits input {
+  width: 45px;
+  height: 48px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  outline: none;
+  background-color: var(--bg);
+}
+.otp-digits input:focus {
+  border-color: var(--red);
+}
+
+/* Form Konteynerlari */
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+}
+
+/* Tizimga kirish (Sign In) */
+.sign-in {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+.login-container.active .sign-in {
+  transform: translateX(100%);
+}
+
+/* Ro'yxatdan o'tish (Sign Up) */
+.sign-up {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
+.login-container.active .sign-up {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+  animation: move 0.6s;
+}
+@keyframes move {
+  0%, 49.9% { opacity: 0; z-index: 1; }
+  50%, 100% { opacity: 1; z-index: 5; }
+}
+
+/* Toggle Bloki */
+.toggle-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: all 0.6s ease-in-out;
+  border-radius: 100px 0 0 100px;
+  z-index: 1000;
+}
+.login-container.active .toggle-container {
+  transform: translateX(-100%);
+  border-radius: 0 100px 100px 0;
+}
+.toggle {
+  background: linear-gradient(to right, var(--brand-green-dk), var(--brand-green));
+  color: #fff;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: all 0.6s ease-in-out;
+}
+.login-container.active .toggle {
+  transform: translateX(50%);
+}
+.toggle-panel {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 30px;
+  text-align: center;
+  top: 0;
+  transform: translateX(0);
+  transition: all 0.6s ease-in-out;
+}
+.toggle-left {
+  transform: translateX(-200%);
+}
+.login-container.active .toggle-left {
+  transform: translateX(0);
+}
+.toggle-right {
+  right: 0;
+  transform: translateX(0);
+}
+.login-container.active .toggle-right {
+  transform: translateX(200%);
+}
+
+/* DASHBOARD LAYOUT */
+.app{display:none;min-height:100vh;flex-direction:column}
+.app.show{display:flex}
+
+.topbar{
+  background:linear-gradient(135deg,var(--brand-green) 0%,var(--brand-green-dk) 100%);
+  color:#fff;padding:16px 20px;position:sticky;top:0;z-index:50;
+  box-shadow:0 2px 12px rgba(0,0,0,.15)
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-brand img{width:34px;height:34px;border-radius:8px;background:#fff;padding:2px}
+.topbar-brand span{font-family:var(--f-display);font-size:18px;font-weight:600}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.topbar-store{font-size:13px;opacity:.9}
+.icon-btn-top{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;transition:background .15s}
+.icon-btn-top:hover{background:rgba(255,255,255,.25)}
+
+.tabs-row{display:flex;gap:4px;background:var(--white);padding:8px 20px;overflow-x:auto;border-bottom:1px solid var(--line);position:sticky;top:68px;z-index:40}
+.tab-btn{
+  padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:700;
+  color:var(--ink3);white-space:nowrap;transition:all .15s;flex-shrink:0
+}
+.tab-btn:hover{background:var(--gold-lt);color:var(--gold-dk)}
+.tab-btn.active{background:var(--brand-green);color:#fff}
+
+.main{flex:1;max-width:1100px;margin:0 auto;width:100%;padding:24px 20px 80px}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-box{background:var(--white);border-radius:14px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.stat-box-icon{font-size:22px;margin-bottom:8px}
+.stat-box-num{font-size:24px;font-weight:900;letter-spacing:-.8px}
+.stat-box-lbl{font-size:12.5px;color:var(--ink3);margin-top:2px}
+
+/* SECTION CARD */
+.card-section{background:var(--white);border-radius:16px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:20px}
+.card-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.card-section-title{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.btn-red{background:var(--red);color:#fff;padding:11px 22px;border-radius:10px;font-size:14px;font-weight:700;transition:background .15s}
+.btn-red:hover{background:var(--red-dk)}
+.btn-outline{border:1.5px solid var(--line);color:var(--ink2);padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:600;transition:all .15s}
+.btn-outline:hover{border-color:var(--red);color:var(--red)}
+.btn-sm{padding:7px 14px;font-size:12.5px;border-radius:8px}
+
+/* IMAGE UPLOAD */
+.img-upload-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.img-slot{
+  width:90px;height:90px;border-radius:12px;border:2px dashed var(--line);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  background:var(--bg);cursor:pointer;overflow:hidden;transition:border-color .15s;flex-shrink:0
+}
+.img-slot:hover{border-color:var(--red)}
+.img-slot img{width:100%;height:100%;object-fit:cover}
+.img-slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-slot .img-icon{font-size:24px;color:var(--ink3)}
+.img-slot .img-remove{
+  position:absolute;top:3px;right:3px;width:20px;height:20px;background:var(--red);
+  color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;z-index:2
+}
+
+/* EMOJI PICKER */
+.emoji-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.emoji-opt{
+  font-size:22px;width:42px;height:42px;border-radius:10px;border:2px solid var(--line);
+  background:var(--bg);transition:border-color .15s,background .15s;display:flex;align-items:center;justify-content:center
+}
+.emoji-opt.selected{border-color:var(--red);background:var(--red-lt)}
+
+/* PRODUCT TABLE/GRID */
+.products-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.product-card{background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:box-shadow .15s}
+.product-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.product-card-media{height:140px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;overflow:hidden}
+.product-card-media img{width:100%;height:100%;object-fit:cover}
+.product-card-body{padding:14px}
+.product-card-title{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.35;min-height:38px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.product-card-price{font-size:17px;font-weight:800;color:var(--red);margin-bottom:10px}
+.product-card-actions{display:flex;gap:6px}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--line);color:var(--ink3);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.pill-green{background:var(--green-lt);color:var(--green)}
+.pill-gold{background:var(--gold-lt);color:#8a5a00}
+
+.empty-box{text-align:center;padding:48px 20px;color:var(--ink3)}
+.empty-box-icon{font-size:44px;display:block;margin-bottom:12px}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(17,18,24,.5);backdrop-filter:blur(3px);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-bg.show{display:flex}
+.modal-box{background:var(--white);border-radius:18px;padding:26px;width:560px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:18px;font-weight:800}
+.modal-close{width:34px;height:34px;border-radius:50%;background:var(--bg);font-size:20px;display:flex;align-items:center;justify-content:center;color:var(--ink3)}
+.modal-close:hover{background:var(--line)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* PROFILE CARD */
+.profile-hero{
+  background:linear-gradient(135deg,var(--red) 0%,var(--red-dk) 100%);
+  border-radius:16px;padding:28px 24px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden
+}
+.profile-hero-inner{display:flex;align-items:center;gap:18px;position:relative}
+.profile-hero-avatar{width:72px;height:72px;border-radius:16px;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.profile-hero-name{font-size:21px;font-weight:900;letter-spacing:-.4px;margin-bottom:4px}
+.profile-hero-phone{font-size:14px;opacity:.85}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:13px 24px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:760px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+  .topbar-store{display:none}
+  .products-list{grid-template-columns:repeat(2,1fr)}
+  .tabs-row{top:62px}
+}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-container" id="loginContainer">
+    
+    <div class="form-container sign-in">
+      <form id="signInForm">
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 5px;">Tizimga kirish</h2>
+        <p style="margin-bottom: 10px;">Telefon raqamingizni kiriting va kod oling</p>
+        
+        <input type="text" id="loginPhone" placeholder="+998 90 123 45 67">
+        <div id="recaptcha-container"></div>
+        
+        <div id="otpSection" style="display:none; width:100%">
+          <span style="display:block; margin-top: 10px;">SMS kodni kiriting:</span>
+          <div class="otp-digits" id="otpDigits">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+          </div>
+          <button type="button" class="btn-form" id="verifyOtpBtn">Kodni tasdiqlash</button>
+        </div>
+        
+        <button type="button" class="btn-form" id="sendOtpBtn">SMS Kod yuborish</button>
+      </form>
+    </div>
+
+    <div class="form-container sign-up">
+      <form id="signUpForm">
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 5px;">Do'kon ma'lumotlari</h2>
+        <p style="margin-bottom: 10px;">Sotuvchi hisobingizni sozlang</p>
+        
+        <input type="text" id="regStoreName" placeholder="Do'kon nomi">
+        <input type="text" id="regCity" placeholder="Shahar">
+        <input type="text" id="regDesc" placeholder="Tavsif">
+        
+        <button type="button" class="btn-form" id="saveRegisterBtn">Ro'yxatdan o'tish</button>
+      </form>
+    </div>
+
+    <div class="toggle-container">
+      <div class="toggle">
+        <div class="toggle-panel toggle-left">
+          <h1 style="font-family: var(--f-display); font-size: 24px; margin-bottom: 10px;">Do'kon bormi?</h1>
+          <p>Agar sizda allaqachon do'kon bo'lsa, tizimga kiring</p>
+          <button class="hidden" id="loginToggle">Kirish</button>
+        </div>
+        <div class="toggle-panel toggle-right">
+          <h1 style="font-family: var(--f-display); font-size: 24px; margin-bottom: 10px;">Yangi sotuvchi!</h1>
+          <p>Tizimga kirgandan so'ng do'koningizni yaratish uchun shu oynaga o'ting</p>
+          <button class="hidden" id="registerToggle">Ro'yxatdan o'tish</button>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<div class="app" id="app">
+  </div>
+
+<script>
+  // Panel animatsiyasi va almashtirish
+  const loginContainer = document.getElementById('loginContainer');
+  const registerToggle = document.getElementById('registerToggle');
+  const loginToggle = document.getElementById('loginToggle');
+
+  registerToggle.addEventListener('click', () => {
+    loginContainer.classList.add("active");
+  });
+
+  loginToggle.addEventListener('click', () => {
+    loginContainer.classList.remove("active");
+  });
+</script>
